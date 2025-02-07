@@ -4,7 +4,7 @@ The react app can be started by navigating to SeniorProject\frontend\crowdsearch
 
 The flask backend needs to be run in a separate terminal and can be started by going to SeniorProject\backend and running -flask run-
 
-There's also a list of dependices you need for the flask portion to run. I recommend making a venv and then install the dependices found in requirements.txt, which can be install by running -pip install -r requirements.txt- after setting up your virtual enviroment.
+There's also a list of dependices you need for the flask portion to run. I recommend making a venv and then install the dependices found in requirements.txt, which can be install by running -pip install -r requirements.txt- after setting up your virtual enviroment. Then just make sure to activate your enviroment -venv\Scripts\activate- before running -flask run-.
 
 I've left the standard readme from create-react-app below
 
