@@ -1,3 +1,13 @@
+Currently this app has both a backend running on flask, and a frontend powered by react and node.js
+
+The react app can be started by navigating to SeniorProject\frontend\crowdsearch and running the -npm start- command or -yarn start- command
+
+The flask backend needs to be run in a separate terminal and can be started by going to SeniorProject\backend and running -flask run-
+
+There's also a list of dependices you need for the flask portion to run. I recommend making a venv and then install the dependices found in requirements.txt, which can be install by running -pip install -r requirements.txt- after setting up your virtual enviroment.
+
+I've left the standard readme from create-react-app below
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
