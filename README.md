@@ -6,6 +6,8 @@ The flask backend needs to be run in a separate terminal and can be started by g
 
 There's also a list of dependices you need for the flask portion to run. I recommend making a venv and then install the dependices found in requirements.txt, which can be install by running -pip install -r requirements.txt- after setting up your virtual enviroment. Then just make sure to activate your enviroment -venv\Scripts\activate- before running -flask run-.
 
+chmod if need be to backend 775 for Mac.
+
 I've left the standard readme from create-react-app below
 
 # Getting Started with Create React App
