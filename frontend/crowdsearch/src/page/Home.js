@@ -10,9 +10,18 @@ const Home = () => {
     const [currentTime, setCurrentTime] = useState(0);
 
     useEffect(() => {
-        fetch('api/time').then(res => res.json()).then(data => {
-          setCurrentTime(data.time);
-        });
+        const fetchTime = () => {
+            fetch('api/time')
+              .then(res => res.json())
+              .then(data => setCurrentTime(data.time))
+        };
+
+        fetchTime();
+
+        const intervalId = setInterval(fetchTime, 10000);
+
+        return () => clearInterval(intervalId);
+
       }, []);
 
     useEffect(()=>{

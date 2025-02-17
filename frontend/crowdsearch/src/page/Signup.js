@@ -35,7 +35,7 @@ const Signup = () => {
         <section>
             <div>
                 <div>                  
-                    <h1> FocusApp </h1>                                                                            
+                    <h1> CrowdSearch </h1>                                                                            
                     <form>                                                                                            
                         <div>
                             <label htmlFor="email-address">

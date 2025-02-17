@@ -30,7 +30,7 @@ const Login = () => {
             <main >        
                 <section>
                     <div>                                            
-                        <p> FocusApp </p>                       
+                        <p> CrowdSearch </p>                       
 
                         <form>                                              
                             <div>
