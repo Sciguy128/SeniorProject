@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { Container, Navbar, Button, Card, Spinner } from 'react-bootstrap';
 
 const Home = () => {
 
@@ -76,27 +77,42 @@ const Home = () => {
 
     return(
         <>
-            <nav>
-                <p>
-                    Welcome Home
-                </p>
-                <p>The current time is {currentTime}.</p>
+            {/* Navbar */}
+            <Navbar bg="dark" variant="dark" className="mb-4 px-3">
+                <Navbar.Brand>CrowdSearch</Navbar.Brand>
+                {user && <Button variant="outline-light" onClick={handleLogout}>Logout</Button>}
+            </Navbar>
 
-                <div>
-                {user ? (
-                    <>
-                        <p>Logged in as: {user.email}</p>
-                        <button onClick={handleLogout}>Logout</button>
-                    </>
-                ) : (
-                    <>
-                    <p>No user is currently logged in.</p>
-                    <button onClick={goToSignup}>Go to Signup</button>
-                    <button onClick={goToLogin}>Go to Login</button>
-                    </>
-                )}
-                </div>
-            </nav>
+            {/* Main Content */}
+            <Container className="text-center">
+                <h1 className="mb-4">Welcome Home</h1>
+
+                {/* Decorative Time Display */}
+                <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
+                    <Card.Body>
+                        <Card.Title>Current Time</Card.Title>
+                        {currentTime === 0 ? <Spinner animation="border" /> : <Card.Text className="fs-4">{currentTime}</Card.Text>}
+                    </Card.Body>
+                </Card>
+
+                {/* User Authentication Section */}
+                <Card className="shadow p-3 bg-white rounded" style={{ maxWidth: "500px", margin: "auto" }}>
+                    <Card.Body>
+                        {user ? (
+                            <>
+                                <h5 className="mb-3">Logged in as: <span className="text-primary">{user.email}</span></h5>
+                                <Button variant="danger" onClick={handleLogout}>Logout</Button>
+                            </>
+                        ) : (
+                            <>
+                                <h5 className="mb-3">No user is currently logged in.</h5>
+                                <Button variant="primary" className="me-2" onClick={() => navigate("/signup")}>Go to Signup</Button>
+                                <Button variant="secondary" onClick={() => navigate("/login")}>Go to Login</Button>
+                            </>
+                        )}
+                    </Card.Body>
+                </Card>
+            </Container>
         </>
     )
 

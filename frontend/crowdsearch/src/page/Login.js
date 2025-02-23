@@ -2,11 +2,14 @@ import React, {useState} from 'react';
 import {  signInWithEmailAndPassword   } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate } from 'react-router-dom'
+import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
 
     const onLogin = (e) => {
         e.preventDefault();
@@ -26,62 +29,50 @@ const Login = () => {
     }
 
     return(
-        <>
-            <main >        
-                <section>
-                    <div>                                            
-                        <p> CrowdSearch </p>                       
+        <Container className="d-flex justify-content-center align-items-center min-vh-100">
+            <Card className="shadow p-4" style={{ width: '400px' }}>
+                <Card.Body>
+                    <h2 className="text-center mb-4">Login</h2>
 
-                        <form>                                              
-                            <div>
-                                <label htmlFor="email-address">
-                                    Email address
-                                </label>
-                                <input
-                                    id="email-address"
-                                    name="email"
-                                    type="email"                                    
-                                    required                                                                                
-                                    placeholder="Email address"
-                                    onChange={(e)=>setEmail(e.target.value)}
-                                />
-                            </div>
+                    {error && <Alert variant="danger">{error}</Alert>} {/* Display error if login fails */}
 
-                            <div>
-                                <label htmlFor="password">
-                                    Password
-                                </label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"                                    
-                                    required                                                                                
-                                    placeholder="Password"
-                                    onChange={(e)=>setPassword(e.target.value)}
-                                />
-                            </div>
+                    <Form onSubmit={onLogin}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                placeholder="Enter your email"
+                            />
+                        </Form.Group>
 
-                            <div>
-                                <button                                    
-                                    onClick={onLogin}                                        
-                                >      
-                                    Login                                                                  
-                                </button>
-                            </div>                               
-                        </form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                placeholder="Enter your password"
+                            />
+                        </Form.Group>
 
-                        <p className="text-sm text-white text-center">
-                            No account yet? {' '}
-                            <NavLink to="/signup">
-                                Sign up
-                            </NavLink>
+                        <Button variant="primary" type="submit" className="w-100">
+                            Login
+                        </Button>
+                    </Form>
+
+                    <div className="text-center mt-3">
+                        <p>
+                            No account yet? <NavLink to="/signup">Sign up</NavLink>
                         </p>
-
                     </div>
-                </section>
-            </main>
-        </>
-    )
-}
+                </Card.Body>
+            </Card>
+        </Container>
+    );
+};
 
-export default Login
+export default Login;
