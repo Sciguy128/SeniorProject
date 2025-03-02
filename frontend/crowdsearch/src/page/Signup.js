@@ -21,8 +21,6 @@ const Signup = () => {
             const user = userCredential.user;
             console.log("Firebase User Created:", user);
 
-            /*
-
             fetch('/api/users/add', {
                 method: "POST",
                 headers: {
@@ -40,10 +38,6 @@ const Signup = () => {
                 navigate("/login");
             })
             .catch((error) => console.error("Error adding user to database:", error));
-
-            */
-            navigate("/login");
-        
         })
         .catch((error) => {
             const errorCode = error.code;
