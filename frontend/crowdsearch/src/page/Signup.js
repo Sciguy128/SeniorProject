@@ -12,15 +12,38 @@ const Signup = () => {
     const [error, setError] = useState('');
 
     const onSubmit = async (e) => {
-      e.preventDefault()
+      e.preventDefault();
+      console.log("Sign up botton clicked");
 
       await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
-            console.log(user);
-            navigate("/login")
-            // ...
+            console.log("Firebase User Created:", user);
+
+            /*
+
+            fetch('/api/users/add', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: user.uid,
+                    name: "", 
+                    email: user.email
+                }),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("User added to database:", data);
+                navigate("/login");
+            })
+            .catch((error) => console.error("Error adding user to database:", error));
+
+            */
+            navigate("/login");
+        
         })
         .catch((error) => {
             const errorCode = error.code;
