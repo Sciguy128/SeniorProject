@@ -43,7 +43,7 @@ def delete_user():
         data = request.get_json()
         id = data["id"]
         
-        cur.execute("SELECT delete_user(%s)", (id))
+        cur.execute("SELECT delete_user(%s)", (id,))
         conn.commit()
         
         return jsonify({"message": f"Profile {id} deleted successfully"}), 200
@@ -56,10 +56,11 @@ def make_report():
         data = request.get_json()
         user_id = data["user_id"]
         location = data["location"]
-        crowd_level = data["crowd_level"]
+        crowd_level = int(data["crowd_level"])
         
-        cur.execute("SELECT create_report(%s, %s, %d)", user_id, location, crowd_level)
-        cur.execute("SELECT update_crowd(%s)", location)
+        cur.execute("SELECT create_report(%s, %s, %s)", (user_id, location, crowd_level))
+        cur.execute("SELECT update_crowd(%s)", (location,))
+        conn.commit()
         
         return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
     except Exception as e:
@@ -75,4 +76,8 @@ curl -X POST http://localhost:5000/api/users/add \
 curl -X POST http://localhost:5000/api/users/delete \
      -H "Content-Type: application/json" \
      -d '{"id": "1"}'
+     
+curl -X POST http://localhost:5000/api/report \
+     -H "Content-Type: application/json" \
+     -d '{"user_id": "2", "location": "Leutner Commons", "crowd_level": "5"}'
 '''
