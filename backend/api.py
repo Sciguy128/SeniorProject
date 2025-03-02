@@ -58,7 +58,7 @@ def make_report():
         crowd_level = data["crowd_level"]
         
         cur.execute("SELECT create_report(%s, %s, %d)", user_id, location, crowd_level)
-        cur.execute("SELECT update_crowd(%s), lid")
+        cur.execute("SELECT update_crowd(%s)", location)
         
         return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
     except Exception as e:
