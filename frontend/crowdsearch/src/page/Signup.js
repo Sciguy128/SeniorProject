@@ -12,41 +12,32 @@ const Signup = () => {
     const [error, setError] = useState('');
 
     const onSubmit = async (e) => {
-      e.preventDefault();
-      console.log("Sign up botton clicked");
+      e.preventDefault()
 
-      await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log("Firebase User Created:", user);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("User created:", user);
 
-            fetch('/api/users/add', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    id: user.uid,
-                    name: "", 
-                    email: user.email
-                }),
+        const addUser = await fetch('api/users/add', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: user.uid,
+                name: "",
+                email: user.email,
             })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("User added to database:", data);
-                navigate("/login");
-            })
-            .catch((error) => console.error("Error adding user to database:", error));
         })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-            // ..
-        });
 
+        const data = await addUser.json();
+        console.log("User added to database:", data)
 
+        navigate("/login");
+      } catch (error) {
+        console.error("Signup Error:", error);
+      }
     }
 
   return (
