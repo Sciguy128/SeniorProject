@@ -16,7 +16,14 @@ cur = conn.cursor()
 def get_current_time():
     return {'time': time.time()}
 
-@app.route('/api/users')
+@app.route('/api/crowds', methods=['GET'])
+def get_crowds():
+    cur.execute("SELECT name, crowd_level FROM LOCATIONS")
+    crowds = cur.fetchall()
+    crowds_list = [{"name": row[0], "crowd_level": row[1]} for row in crowds]
+    return jsonify(crowds_list)
+
+@app.route('/api/users', methods=['GET'])
 def get_users():
     cur.execute("SELECT * FROM USERS")
     users = cur.fetchall()
@@ -68,6 +75,8 @@ def make_report():
 
 '''
 Curl methods to test the backend integration:
+
+curl -X GET http://localhost:5000/api/crowds
 
 curl -X POST http://localhost:5000/api/users/add \
      -H "Content-Type: application/json" \
