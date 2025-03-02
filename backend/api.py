@@ -48,6 +48,21 @@ def delete_user():
         return jsonify({"message": f"Profile {id} deleted successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+@app.route('/api/report', methods=['POST'])
+def make_report():
+    try:
+        data = request.get_json()
+        user_id = data["user_id"]
+        location = data["location"]
+        crowd_level = data["crowd_level"]
+        
+        cur.execute("SELECT create_report(%s, %s, %d)", user_id, location, crowd_level)
+        cur.execute("SELECT update_crowd(%s), lid")
+        
+        return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 '''
 Curl methods to test the backend integration:
