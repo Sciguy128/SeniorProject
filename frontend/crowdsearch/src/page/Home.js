@@ -132,26 +132,30 @@ const Home = () => {
                     </Card.Body>
                 </Card>
 
-                {/* Display Locations & Crowd Levels */}
-                <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
-                    <Card.Body>
-                        <Card.Title>Location Crowd Levels</Card.Title>
-                        {locations.length === 0 ? (
-                            <Spinner animation="border" />
-                        ) : (
-                            <ul className="list-group">
-                                {locations.map((location, index) => {
-                                    return (
-                                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                        <strong>{location.name}</strong>
-                                        <span>{location.crowd_level}</span>
-                                    </li>
-                                    );
-                                })}
-                            </ul>
-                        )}
-                    </Card.Body>
-                </Card>
+                {user && location.pathname === "/" && (
+                    <>
+                        {/* Display Locations & Crowd Levels */}
+                        <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
+                            <Card.Body>
+                                <Card.Title>Location Crowd Levels</Card.Title>
+                                {locations.length === 0 ? (
+                                    <Spinner animation="border" />
+                                ) : (
+                                    <ul className="list-group">
+                                        {locations.map((location, index) => {
+                                            return (
+                                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                <strong>{location.name}</strong>
+                                                <span>{location.crowd_level}</span>
+                                            </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </Card.Body>
+                        </Card>
+                    </>
+                )}
             </Container>
         </>
     )
