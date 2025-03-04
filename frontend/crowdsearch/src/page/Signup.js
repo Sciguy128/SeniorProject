@@ -47,7 +47,6 @@ const Signup = () => {
                     <h2 className="text-center mb-4">Sign Up</h2>
                     
                     {error && <Alert variant="danger">{error}</Alert>} {/* Display errors if any */}
-
                     <Form onSubmit={onSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Label>Email address</Form.Label>

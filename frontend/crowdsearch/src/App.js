@@ -6,23 +6,24 @@ import { BrowserRouter as Router} from 'react-router-dom';
 import {Routes, Route} from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
+//import Map from './page/Map';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-
   return (
     <Router>
       <div>
-        <section>                              
-            <Routes>                                                                        
-              <Route path="/" element={<Home/>}/>
-              <Route path="/signup" element={<Signup/>}/>
-              <Route path="/login" element={<Login/>}/>
-            </Routes>                    
+        <section>
+          <Routes>
+            <Route path="/" element={<Home/>} />
+            <Route path="/signup" element={<Signup/>} />
+            <Route path="/login" element={<Login/>} />
+          </Routes>
         </section>
       </div>
     </Router>
   );
 }
+// <Route path="/map" element={<Map />} />
 
 export default App;

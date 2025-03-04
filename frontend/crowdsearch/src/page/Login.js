@@ -1,9 +1,9 @@
+
 import React, {useState} from 'react';
 import {  signInWithEmailAndPassword   } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
-
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
@@ -33,7 +33,6 @@ const Login = () => {
             <Card className="shadow p-4" style={{ width: '400px' }}>
                 <Card.Body>
                     <h2 className="text-center mb-4">Login</h2>
-
                     {error && <Alert variant="danger">{error}</Alert>} {/* Display error if login fails */}
 
                     <Form onSubmit={onLogin}>
@@ -74,5 +73,4 @@ const Login = () => {
         </Container>
     );
 };
-
 export default Login;

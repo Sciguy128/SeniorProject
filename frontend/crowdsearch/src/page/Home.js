@@ -47,14 +47,9 @@ const Home = () => {
     useEffect(()=>{
         onAuthStateChanged(auth, (user) => {
             if (user) {
-              // User is signed in, see docs for a list of available properties
-              // https://firebase.google.com/docs/reference/js/firebase.User
               const uid = user.uid;
-              // ...
               console.log("uid", uid)
             } else {
-              // User is signed out
-              // ...
               console.log("user is logged out")
             }
           });
@@ -64,25 +59,22 @@ const Home = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
-                setUser(currentUser); // Set the user when logged in
+                setUser(currentUser);
                 console.log("User logged in:", currentUser);
             } else {
-                setUser(null); // Clear user when logged out
+                setUser(null);
                 console.log("User is logged out");
             }
         });
 
-        // Cleanup the subscription when the component unmounts
         return () => unsubscribe();
     }, []);
 
     const handleLogout = () => {               
         signOut(auth).then(() => {
-        // Sign-out successful.
             navigate("/");
             console.log("Signed out successfully")
         }).catch((error) => {
-        // An error happened.
         });
     }
 
@@ -96,17 +88,14 @@ const Home = () => {
 
     return(
         <>
-            {/* Navbar */}
             <Navbar bg="dark" variant="dark" className="mb-4 px-3">
                 <Navbar.Brand>CrowdSearch</Navbar.Brand>
                 {user && <Button variant="outline-light" onClick={handleLogout}>Logout</Button>}
             </Navbar>
 
-            {/* Main Content */}
             <Container className="text-center">
                 <h1 className="mb-4">Welcome Home</h1>
 
-                {/* Decorative Time Display */}
                 <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
                     <Card.Body>
                         <Card.Title>Current Time</Card.Title>
@@ -114,7 +103,6 @@ const Home = () => {
                     </Card.Body>
                 </Card>
 
-                {/* User Authentication Section */}
                 <Card className="shadow p-3 bg-white rounded" style={{ maxWidth: "500px", margin: "auto" }}>
                     <Card.Body>
                         {user ? (
@@ -132,9 +120,15 @@ const Home = () => {
                     </Card.Body>
                 </Card>
 
+                <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
+                    <Card.Body>
+                        <Card.Title>Campus Map</Card.Title>
+                        <Button variant="primary" className="me-2" onClick={() => navigate("/map")}>Go to Map</Button>
+                    </Card.Body>
+                </Card>
+
                 {user && location.pathname === "/" && (
                     <>
-                        {/* Display Locations & Crowd Levels */}
                         <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
                             <Card.Body>
                                 <Card.Title>Location Crowd Levels</Card.Title>
@@ -163,3 +157,4 @@ const Home = () => {
 }
 
 export default Home
+
