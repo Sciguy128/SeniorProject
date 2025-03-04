@@ -4,7 +4,7 @@ from flask_cors import CORS
 import psycopg2
 
 
-database_url = "postgres://teammate:crowdsearch@172.20.186.51:5433/crowd_search"
+database_url = "postgres://teammate:crowdsearch@172.20.113.156:5433/crowd_search"
 app = Flask(__name__)
 
 CORS(app)

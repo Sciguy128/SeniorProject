@@ -3,31 +3,13 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { Container, Navbar, Button, Card, Spinner } from 'react-bootstrap';
+import Report from './Report'; 
 
 const Home = () => {
 
     const [user, setUser] = useState(null);
-    const [locations, setLocations] = useState([])
     const navigate = useNavigate();
     const [currentTime, setCurrentTime] = useState(0);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchCrowds = () => {
-            fetch('api/crowds')
-                .then(res => res.json())
-                .then(data => {
-                    setLocations(data)
-                    console.log("Crowd Levels:", data)
-                })
-        }
-
-        fetchCrowds(); 
-
-        const intervalId = setInterval(fetchCrowds, 10000);
-
-        return () => clearInterval(intervalId);
-    }, [])
 
     useEffect(() => {
         const fetchTime = () => {
@@ -121,6 +103,7 @@ const Home = () => {
                             <>
                                 <h5 className="mb-3">Logged in as: <span className="text-primary">{user.email}</span></h5>
                                 <Button variant="danger" onClick={handleLogout}>Logout</Button>
+                                <Report></Report>
                             </>
                         ) : (
                             <>
@@ -131,31 +114,6 @@ const Home = () => {
                         )}
                     </Card.Body>
                 </Card>
-
-                {user && location.pathname === "/" && (
-                    <>
-                        {/* Display Locations & Crowd Levels */}
-                        <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
-                            <Card.Body>
-                                <Card.Title>Location Crowd Levels</Card.Title>
-                                {locations.length === 0 ? (
-                                    <Spinner animation="border" />
-                                ) : (
-                                    <ul className="list-group">
-                                        {locations.map((location, index) => {
-                                            return (
-                                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                <strong>{location.name}</strong>
-                                                <span>{location.crowd_level}</span>
-                                            </li>
-                                            );
-                                        })}
-                                    </ul>
-                                )}
-                            </Card.Body>
-                        </Card>
-                    </>
-                )}
             </Container>
         </>
     )
