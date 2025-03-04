@@ -119,7 +119,7 @@ const Home = () => {
                     <Card.Body>
                         {user ? (
                             <>
-                                <h5 className="mb-3">Logged in as: <span className="text-primary">{user.email}</span></h5>
+                                <h5 className="mb-3">Logged in as: <span className="text-primary">{user.displayName}</span></h5>
                                 <Button variant="danger" onClick={handleLogout}>Logout</Button>
                                 <Report></Report>
                             </>
