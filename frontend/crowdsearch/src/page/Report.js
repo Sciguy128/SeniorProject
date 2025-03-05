@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
+import { auth } from '../firebase';
 
 const Report = () => {
   const [location, setLocation] = useState('');
@@ -16,34 +17,42 @@ const Report = () => {
       setError('Please fill in all required fields.');
       return;
     }
+    
+    const user = auth.currentUser;
 
-    const reportData = {
-      location,
-      crowd_level: crowdLevel,
-      notes,
-      timestamp: new Date().toISOString(),
-    };
+    if (user) {
+      const reportData = {
+        user_id: auth.currentUser.uid,
+        location,
+        crowd_level: crowdLevel,
+        // notes,
+      };
 
-    fetch('api/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reportData)
-    })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Failed to submit report');
-        }
-        return res.json();
+      console.log("Report Data", reportData)
+
+      fetch('api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportData)
       })
-      .then(data => {
-        console.log('Report submitted:', data);
-        setSubmitted(true);
-        setError(null);
-      })
-      .catch(err => {
-        console.error('Error submitting report:', err);
-        setError('Submission failed. Please try again later.');
-      });
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Failed to submit report');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log('Report submitted:', data);
+          setSubmitted(true);
+          setError(null);
+        })
+        .catch(err => {
+          console.error('Error submitting report:', err);
+          setError('Submission failed. Please try again later.');
+        });
+    } else {
+      console.log("User not signed in, but report visible")
+    }
   };
 
   return (
