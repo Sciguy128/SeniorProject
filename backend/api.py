@@ -67,6 +67,7 @@ def make_report():
         
         cur.execute("SELECT create_report(%s, %s, %s)", (user_id, location, crowd_level))
         cur.execute("SELECT update_crowd(%s)", (location,))
+        cur.execute("SELECT update_xp(%s)", (user_id,))
         conn.commit()
         
         return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
