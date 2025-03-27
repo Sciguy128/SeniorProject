@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import { Container, Navbar, Button, Card, Spinner } from 'react-bootstrap';
+import { Container, Navbar, Button, Card, Spinner, Modal } from 'react-bootstrap';
 import Report from './Report'; 
 
 const Home = () => {
@@ -10,7 +10,11 @@ const Home = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [currentTime, setCurrentTime] = useState(0);
-    const [locations, setLocations] = useState([])
+    const [locations, setLocations] = useState([]);
+    const [showLocationModal, setShowLocationModal] = useState(false);
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
+
 
     useEffect(() => {
         const fetchCrowds = () => {
@@ -52,6 +56,7 @@ const Home = () => {
               const uid = user.uid;
               // ...
               console.log("uid", uid)
+              setShowLocationModal(true);
             } else {
               // User is signed out
               // ...
@@ -86,6 +91,26 @@ const Home = () => {
         });
     }
 
+    const handleGetLocation = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLatitude(position.coords.latitude.toFixed(6));
+                    setLongitude(position.coords.longitude.toFixed(6));
+                    setShowLocationModal(false); // close modal
+                    console.log("Location obtained:", position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    console.error("Error getting location:", error.message);
+                    setShowLocationModal(false); // close modal even if denied
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+            setShowLocationModal(false);
+        }
+    };
+
     const goToSignup = () => {
         navigate("/signup");
     }
@@ -105,6 +130,16 @@ const Home = () => {
             {/* Main Content */}
             <Container className="text-center">
                 <h1 className="mb-4">Welcome Home</h1>
+
+                {latitude && longitude && (
+                    <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
+                        <Card.Body>
+                        <Card.Title>Your Current Location</Card.Title>
+                        <Card.Text>Latitude: {latitude}</Card.Text>
+                        <Card.Text>Longitude: {longitude}</Card.Text>
+                        </Card.Body>
+                    </Card>
+                    )}
 
                 {/* Decorative Time Display */}
                 <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
@@ -158,6 +193,22 @@ const Home = () => {
                     </>
                 )}
 
+                <Modal show={showLocationModal} onHide={() => setShowLocationModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Share Your Location</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    We'd like to access your location to improve map features and show crowd levels near you.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowLocationModal(false)}>
+                    No, thanks
+                    </Button>
+                    <Button variant="primary" onClick={handleGetLocation}>
+                    Share Location
+                    </Button>
+                </Modal.Footer>
+                </Modal>
             </Container>
         </>
     )
