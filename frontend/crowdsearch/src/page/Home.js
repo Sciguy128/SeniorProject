@@ -37,12 +37,25 @@ const Home = () => {
         const fetchTime = () => {
             fetch('api/time')
               .then(res => res.json())
-              .then(data => setCurrentTime(data.time))
+              .then(data => {
+                const unixTimestamp = data.time;
+                const date = new Date(unixTimestamp * 1000); // convert to milliseconds
+                const formattedTime = date.toLocaleString("en-US", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    });
+                setCurrentTime(formattedTime);
+              });
         };
 
         fetchTime();
 
-        const intervalId = setInterval(fetchTime, 10000);
+        const intervalId = setInterval(fetchTime, 1000);
 
         return () => clearInterval(intervalId);
 
@@ -73,6 +86,8 @@ const Home = () => {
                 console.log("User logged in:", currentUser);
             } else {
                 setUser(null); // Clear user when logged out
+                setLatitude(null);
+                setLongitude(null);
                 console.log("User is logged out");
             }
         });
