@@ -93,13 +93,14 @@ const Report = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formCrowdLevel">
-              <Form.Label>Crowd Level</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter crowd level"
-                value={crowdLevel}
-                onChange={(e) => setCrowdLevel(e.target.value)}
-              />
+              <Form.Label>Crowd Level: {crowdLevel}</Form.Label>
+                <Form.Range
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={crowdLevel}
+                  onChange={(e) => setCrowdLevel(e.target.value)}
+                />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formNotes">
