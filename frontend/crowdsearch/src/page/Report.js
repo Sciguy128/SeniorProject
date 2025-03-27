@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { auth } from '../firebase';
 
@@ -8,6 +8,24 @@ const Report = () => {
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [locations, setLocations] = useState([])
+
+  useEffect(() => {
+          const fetchCrowds = () => {
+              fetch('api/crowds')
+                  .then(res => res.json())
+                  .then(data => {
+                      setLocations(data)
+                      console.log("Crowd Levels:", data)
+                  })
+          }
+  
+          fetchCrowds(); 
+  
+          const intervalId = setInterval(fetchCrowds, 10000);
+  
+          return () => clearInterval(intervalId);
+      }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,12 +83,13 @@ const Report = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formLocation">
               <Form.Label>Location</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter location name"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
+              <Form.Select>
+              {locations.map((location, index) => {
+                  return (
+                  <option key={index} > {location.name} </option>
+                  );
+              })}
+              </Form.Select>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formCrowdLevel">
