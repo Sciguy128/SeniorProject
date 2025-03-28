@@ -55,7 +55,7 @@ const Home = () => {
 
         fetchTime();
 
-        const intervalId = setInterval(fetchTime, 1000);
+        const intervalId = setInterval(fetchTime, 10000);
 
         return () => clearInterval(intervalId);
 
