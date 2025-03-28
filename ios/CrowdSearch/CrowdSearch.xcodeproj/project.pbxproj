@@ -12,6 +12,7 @@
 		94C89B672D973FC9000B2CCC /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 94C89B662D973FC9000B2CCC /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		94C89B692D973FC9000B2CCC /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 94C89B682D973FC9000B2CCC /* FirebaseAppCheck */; };
 		94C89B6B2D973FC9000B2CCC /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 94C89B6A2D973FC9000B2CCC /* FirebaseAppDistribution-Beta */; };
+		94C89B902D974E33000B2CCC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 94C89B8F2D974E33000B2CCC /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				94C89B692D973FC9000B2CCC /* FirebaseAppCheck in Frameworks */,
+				94C89B902D974E33000B2CCC /* FirebaseAuth in Frameworks */,
 				94C89B632D973FC9000B2CCC /* FirebaseAnalytics in Frameworks */,
 				94C89B6B2D973FC9000B2CCC /* FirebaseAppDistribution-Beta in Frameworks */,
 				94C89B672D973FC9000B2CCC /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
@@ -46,6 +48,7 @@
 			isa = PBXGroup;
 			children = (
 				94C89B502D973EA9000B2CCC /* CrowdSearch */,
+				94C89B8E2D974E33000B2CCC /* Frameworks */,
 				94C89B4F2D973EA9000B2CCC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +59,13 @@
 				94C89B4E2D973EA9000B2CCC /* CrowdSearch.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		94C89B8E2D974E33000B2CCC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +93,7 @@
 				94C89B662D973FC9000B2CCC /* FirebaseAnalyticsWithoutAdIdSupport */,
 				94C89B682D973FC9000B2CCC /* FirebaseAppCheck */,
 				94C89B6A2D973FC9000B2CCC /* FirebaseAppDistribution-Beta */,
+				94C89B8F2D974E33000B2CCC /* FirebaseAuth */,
 			);
 			productName = CrowdSearch;
 			productReference = 94C89B4E2D973EA9000B2CCC /* CrowdSearch.app */;
@@ -380,6 +391,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 94C89B612D973FC9000B2CCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseAppDistribution-Beta";
+		};
+		94C89B8F2D974E33000B2CCC /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 94C89B612D973FC9000B2CCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

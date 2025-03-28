@@ -4,9 +4,9 @@
 //
 //  Created by Ryan Lin on 3/28/25.
 //
-
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
@@ -18,12 +18,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct CrowdSearchApp: App {
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+    @StateObject var session = SessionManager()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if session.isLoggedIn {
+                ContentView()
+                    .environmentObject(session)
+            } else {
+                LoginView()
+                    .environmentObject(session)
+            }
         }
     }
 }
+
