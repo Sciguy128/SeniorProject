@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import { Container, Navbar, Button, Card, Spinner, Modal } from 'react-bootstrap';
+import { Container, Navbar, Button, Card, Spinner, Modal, Row, Col } from 'react-bootstrap';
 import Report from './Report'; 
 
 const Home = () => {
@@ -139,7 +139,20 @@ const Home = () => {
             {/* Navbar */}
             <Navbar bg="dark" variant="dark" className="mb-4 px-3">
                 <Navbar.Brand>CrowdSearch</Navbar.Brand>
-                {user && <Button variant="outline-light" onClick={handleLogout}>Logout</Button>}
+                {user && 
+                <>
+                    <Button variant="outline-light" onClick={handleLogout}>Logout</Button> 
+                    <Col fluid></Col>
+                    <Col md='auto'> <Navbar.Text>Rank: put rank here</Navbar.Text></Col>
+                    <Col md='auto'><Navbar.Text> </Navbar.Text></Col>
+                    <Col md='auto'> <Navbar.Text>XP: put XP here</Navbar.Text></Col>
+                    <Col md='auto'><Navbar.Text> </Navbar.Text></Col>
+                    <Col md='auto' className='text-end'>                       
+                        <Navbar.Text> Signed in as: {user.displayName} </Navbar.Text>
+                    </Col>
+                    </>
+                }
+                {!user && <Button variant="outline-light" onClick={goToLogin}>Login</Button>}
             </Navbar>
 
             {/* Main Content */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
+import { Container, Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { auth } from '../firebase';
 
 const Report = () => {
@@ -83,13 +83,16 @@ const Report = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formLocation">
               <Form.Label>Location</Form.Label>
-              <Form.Select>
-              {locations.map((location, index) => {
-                  return (
-                  <option key={index} > {location.name} </option>
-                  );
-              })}
-              </Form.Select>
+              {locations === null ? <Spinner animation="border" /> :
+                <Form.Select>
+                {locations.map((location, index) => {
+                    return (
+                    <option key={index} > {location.name} </option>
+                    );
+                })}
+                </Form.Select>
+              }
+
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formCrowdLevel">
