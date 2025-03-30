@@ -1,12 +1,11 @@
 //
-//  HomepageView.swift
+//  HomePageView.swift
 //  CrowdSearch
 //
 //  Created by Ryan Lin on 3/28/25.
 //
 
 import Foundation
-
 import SwiftUI
 import FirebaseAuth
 
@@ -48,6 +47,12 @@ struct HomePageView: View {
                 reloadUser()
             }
             .padding()
+
+            Button("Logout") {
+                logout()
+            }
+            .padding()
+            .foregroundColor(.red)
         }
         .padding()
     }
@@ -61,6 +66,16 @@ struct HomePageView: View {
             if let error = error {
                 errorMessage = error.localizedDescription
             }
+        }
+    }
+
+    private func logout() {
+        do {
+            try Auth.auth().signOut()
+            // Handle post-logout actions, like navigating to login screen
+            print("Successfully logged out.")
+        } catch {
+            errorMessage = "Failed to log out: \(error.localizedDescription)"
         }
     }
 }
