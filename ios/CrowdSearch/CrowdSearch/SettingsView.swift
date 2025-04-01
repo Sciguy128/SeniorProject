@@ -1,15 +1,16 @@
 //
-//  HomePageView.swift
+//  SettingsView.swift
 //  CrowdSearch
 //
-//  Created by Ryan Lin on 3/28/25.
+//  Created by Ryan Lin on 3/31/25.
 //
+
 
 import Foundation
 import SwiftUI
 import FirebaseAuth
 
-struct HomePageView: View {
+struct SettingsView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
 
@@ -78,4 +79,8 @@ struct HomePageView: View {
             errorMessage = "Failed to log out: \(error.localizedDescription)"
         }
     }
+}
+
+#Preview{
+    SettingsView()
 }
