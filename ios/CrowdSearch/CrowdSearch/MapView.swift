@@ -25,17 +25,17 @@ struct CrowdLocation: Identifiable {
 struct MapView: View {
     @State private var cameraPosition = MapCameraPosition.region(
         MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 41.5065, longitude: -81.6085),
-            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            center: CLLocationCoordinate2D(latitude: 41.507421 , longitude: -81.607245),
+            span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
         )
     )
 
     @State private var pointsOfInterest: [CrowdLocation] = [
-        CrowdLocation(name: "Thwing Center", coordinate: CLLocationCoordinate2D(latitude: 41.507600, longitude: -81.609200), crowdLevel: 0),
-        CrowdLocation(name: "Tinkham Veale University Center", coordinate: CLLocationCoordinate2D(latitude: 41.508050, longitude: -81.609914), crowdLevel: 0),
+        CrowdLocation(name: "Thwing Center", coordinate: CLLocationCoordinate2D(latitude: 41.507437 ,longitude: -81.60840), crowdLevel: 0),
+        CrowdLocation(name: "Tinkham Veale", coordinate: CLLocationCoordinate2D(latitude: 41.508186 , longitude: -81.608665), crowdLevel: 0),
         CrowdLocation(name: "Veale Center", coordinate: CLLocationCoordinate2D(latitude: 41.504664, longitude: -81.607070), crowdLevel: 0),
-        CrowdLocation(name: "Leutner Commons", coordinate: CLLocationCoordinate2D(latitude: 41.509452, longitude: -81.604680), crowdLevel: 0),
-        CrowdLocation(name: "Fribley Commons", coordinate: CLLocationCoordinate2D(latitude: 41.500258, longitude: -81.608053), crowdLevel: 0)
+        CrowdLocation(name: "Leutner Commons", coordinate: CLLocationCoordinate2D(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
+        CrowdLocation(name: "Fribley Commons", coordinate: CLLocationCoordinate2D(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
     ]
 
     var body: some View {
