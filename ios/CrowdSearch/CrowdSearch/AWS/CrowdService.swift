@@ -16,7 +16,7 @@ struct Crowd: Codable, Identifiable {
 
 class CrowdService {
     static let shared = CrowdService()
-    private let baseURL = "http://localhost:5000" // Use your actual server URL
+    private let baseURL = "http://localhost:5000" // Backend URL
 
     func fetchCrowds() async throws -> [Crowd] {
         guard let url = URL(string: "\(baseURL)/api/crowds") else {

@@ -16,7 +16,7 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Welcome")
+            Text("Signed In as")
                 .font(.largeTitle)
                 .bold()
 

@@ -14,8 +14,8 @@ struct ContentView: View {
     var body: some View {
         Group {
             if session.isLoggedIn {
-//                MapView()
-                CrowdListView()
+                MapView()
+//                CrowdListView()
             } else {
                 LoginView()
             }
