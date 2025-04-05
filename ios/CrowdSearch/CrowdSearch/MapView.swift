@@ -4,7 +4,6 @@
 //
 //  Created by Ryan Lin on 3/31/25.
 //
-
 //
 //  HomePageView.swift
 //  CrowdSearch
@@ -23,10 +22,12 @@ struct CrowdLocation: Identifiable {
 }
 
 struct MapView: View {
+    @StateObject private var locationManager = LocationManager()
+
     @State private var cameraPosition = MapCameraPosition.region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 41.507421 , longitude: -81.607245),
-            span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.015)
         )
     )
 
@@ -42,39 +43,44 @@ struct MapView: View {
         Map(position: $cameraPosition) {
             ForEach(pointsOfInterest) { item in
                 Annotation("", coordinate: item.coordinate) {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 6) {
                         Text(item.name)
-                            .font(.caption)
+                            .font(.headline)
                             .bold()
-                            .padding(6)
+                            .padding(8)
                             .background(Color.white)
                             .foregroundColor(.black)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .shadow(radius: 2)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .shadow(radius: 3)
 
                         Text("Level \(item.crowdLevel)")
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.blue.opacity(0.8))
+                            .font(.callout)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.blue.opacity(0.85))
                             .foregroundColor(.white)
                             .clipShape(Capsule())
-                            .shadow(radius: 1)
+                            .shadow(radius: 2)
                     }
                 }
             }
+
+            // ✅ Show user location only if they are on campus
+            if locationManager.isOnCampus {
+                UserAnnotation()
+            }
         }
-        // Use standard style and disable default geocoded POIs
         .mapStyle(.standard(elevation: .realistic))
         .mapControls {
-            MapUserLocationButton()
             MapCompass()
+            MapUserLocationButton()
         }
         .navigationTitle("CWRU Crowd Map")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await fetchCrowdLevels()
         }
+
     }
 
     func fetchCrowdLevels() async {
