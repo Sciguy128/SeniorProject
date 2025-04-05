@@ -41,28 +41,36 @@ struct MapView: View {
     var body: some View {
         Map(position: $cameraPosition) {
             ForEach(pointsOfInterest) { item in
-                Annotation(item.name, coordinate: item.coordinate) {
+                Annotation("", coordinate: item.coordinate) {
                     VStack(spacing: 4) {
-                        Text("\(item.crowdLevel)")
-                            .font(.caption)
-                            .padding(6)
-                            .background(.blue)
-                            .foregroundColor(.white)
-                            .clipShape(Circle())
-
                         Text(item.name)
-                            .font(.caption2)
+                            .font(.caption)
                             .bold()
-                            .multilineTextAlignment(.center)
-                            .padding(4)
-                            .background(.white.opacity(0.8))
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .padding(6)
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .shadow(radius: 2)
+
+                        Text("Level \(item.crowdLevel)")
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.blue.opacity(0.8))
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
+                            .shadow(radius: 1)
                     }
                 }
             }
         }
-        .mapStyle(.imagery(elevation: .realistic))
-        .navigationTitle("CWRU Points of Interest")
+        // Use standard style and disable default geocoded POIs
+        .mapStyle(.standard(elevation: .realistic))
+        .mapControls {
+            MapUserLocationButton()
+            MapCompass()
+        }
+        .navigationTitle("CWRU Crowd Map")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await fetchCrowdLevels()
@@ -70,7 +78,7 @@ struct MapView: View {
     }
 
     func fetchCrowdLevels() async {
-        guard let url = URL(string: "http://127.0.0.1:5000/api/crowds") else { return } // Replace with your Mac's IP address
+        guard let url = URL(string: "http://127.0.0.1:5000/api/crowds") else { return } // Replace with Mac IP
 
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
@@ -89,4 +97,3 @@ struct MapView: View {
         }
     }
 }
-
