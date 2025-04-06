@@ -14,6 +14,8 @@ const Home = () => {
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+    const [xp, setXp] = useState(0)
+    const [rank, setRank] = useState(0)
 
 
     useEffect(() => {
@@ -28,10 +30,36 @@ const Home = () => {
 
         fetchCrowds(); 
 
-        const intervalId = setInterval(fetchCrowds, 10000);
+        const crowdInterval = setInterval(fetchCrowds, 10000);
 
-        return () => clearInterval(intervalId);
-    }, [])
+        return () => clearInterval(crowdInterval);
+    }, []);
+
+    useEffect(() => {
+        const fetchXp = () => {
+            console.log("In fetch XP", user)
+            if (user) {
+                console.log("In if statement")
+                fetch('api/xp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({"id": user.uid})
+                })
+                    .then(res => res.json())
+                    .then(xpData => {
+                        setXp(xpData["xp"])
+                        setRank(xpData["rank"])
+                        console.log("Fetch XP:", xpData)
+                    })
+                }
+        }
+
+        fetchXp(); 
+
+        const xpInterval = setInterval(fetchXp, 10000);
+
+        return () => clearInterval(xpInterval);
+    }, [user]);
 
     useEffect(() => {
         const fetchTime = () => {
@@ -143,9 +171,9 @@ const Home = () => {
                 <>
                     <Button variant="outline-light" onClick={handleLogout}>Logout</Button> 
                     <Col fluid></Col>
-                    <Col md='auto'> <Navbar.Text>Rank: put rank here</Navbar.Text></Col>
+                    <Col md='auto'> <Navbar.Text>Rank: {rank}</Navbar.Text></Col>
                     <Col md='auto'><Navbar.Text> </Navbar.Text></Col>
-                    <Col md='auto'> <Navbar.Text>XP: put XP here</Navbar.Text></Col>
+                    <Col md='auto'> <Navbar.Text>XP: {xp}</Navbar.Text></Col>
                     <Col md='auto'><Navbar.Text> </Navbar.Text></Col>
                     <Col md='auto' className='text-end'>                       
                         <Navbar.Text> Signed in as: {user.displayName} </Navbar.Text>

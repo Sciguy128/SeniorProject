@@ -29,6 +29,22 @@ def get_users():
     users = cur.fetchall()
     return jsonify(users)
 
+@app.route('/api/xp', methods=['POST'])
+def get_xp():
+    try:
+        data = request.get_json()
+        id = data["id"]
+        
+        cur.execute("SELECT xp, rank FROM USERS WHERE id = %s", (id,))
+        select = cur.fetchone()
+        
+        if select:
+            return jsonify({"xp": f"{select[0]}", "rank": f"{select[1]}"})
+        else:
+            return jsonify({"error": "User does not exist"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
 @app.route('/api/users/add', methods=['POST'])
 def add_user():
     try:
@@ -90,4 +106,8 @@ curl -X POST http://localhost:5000/api/users/delete \
 curl -X POST http://localhost:5000/api/report \
      -H "Content-Type: application/json" \
      -d '{"user_id": "2", "location": "Leutner Commons", "crowd_level": "5"}'
+     
+curl -X POST http://localhost:5000/api/xp \
+     -H "Content-Type: application/json" \
+     -d '{"id": "2"}'
 '''
