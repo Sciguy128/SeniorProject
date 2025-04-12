@@ -24,3 +24,7 @@ yarn-error.log*
 
 venv
 __pycache__
+
+firebase.js
+
+*.pem
