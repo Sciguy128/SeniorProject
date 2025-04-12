@@ -9,15 +9,14 @@ app = Flask(__name__)
 
 CORS(app)
 
-conn = psycopg2.connect(database_url)
-cur = conn.cursor()
-
 @app.route('/api/time')
 def get_current_time():
     return {'time': time.time()}
 
 @app.route('/api/crowds', methods=['GET'])
 def get_crowds():
+    conn = psycopg2.connect(database_url)
+    cur = conn.cursor()
     cur.execute("SELECT name, crowd_level FROM LOCATIONS")
     crowds = cur.fetchall()
     crowds_list = [{"name": row[0], "crowd_level": row[1]} for row in crowds]
@@ -25,17 +24,20 @@ def get_crowds():
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
+    conn = psycopg2.connect(database_url)
+    cur = conn.cursor()
     cur.execute("SELECT * FROM USERS")
     users = cur.fetchall()
     return jsonify(users)
 
 @app.route('/api/xp', methods=['POST'])
 def get_xp():
-    return jsonify({"xp": f"10", "rank": f"rookie"})
     try:
         data = request.get_json()
         id = data["id"]
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT xp, rank FROM USERS WHERE id = %s", (id,))
         select = cur.fetchone()
         
@@ -54,6 +56,8 @@ def add_user():
         name = data["name"]
         email = data["email"]
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT add_user(%s, %s, %s)", (id, name, email))
         conn.commit()
         
@@ -67,6 +71,8 @@ def delete_user():
         data = request.get_json()
         id = data["id"]
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT delete_user(%s)", (id,))
         conn.commit()
         
@@ -82,6 +88,8 @@ def make_report():
         location = data["location"]
         crowd_level = int(data["crowd_level"])
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT create_report(%s, %s, %s)", (user_id, location, crowd_level))
         cur.execute("SELECT update_crowd(%s)", (location,))
         cur.execute("SELECT update_xp(%s)", (user_id,))
