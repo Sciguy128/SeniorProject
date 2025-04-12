@@ -22,6 +22,7 @@ struct CrowdLocation: Identifiable {
 }
 
 struct MapView: View {
+    
     @StateObject private var locationManager = LocationManager()
 
     @State private var cameraPosition = MapCameraPosition.region(
@@ -38,6 +39,8 @@ struct MapView: View {
         CrowdLocation(name: "Leutner Commons", coordinate: CLLocationCoordinate2D(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
         CrowdLocation(name: "Fribley Commons", coordinate: CLLocationCoordinate2D(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
     ]
+
+    @State private var showReportForm = false
 
     var body: some View {
         Map(position: $cameraPosition) {
@@ -80,6 +83,30 @@ struct MapView: View {
         .task {
             await fetchCrowdLevels()
         }
+        .overlay(
+            VStack {
+                Spacer()
+                HStack {
+                    Button(action: {
+                        showReportForm = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .frame(width: 48, height: 48)
+                            .foregroundColor(.blue)
+                            .shadow(radius: 4)
+                    }
+                    .padding(.leading, 20)
+                    .padding(.bottom, 20)
+                    
+                    Spacer()
+                }
+            }
+        )
+        .sheet(isPresented: $showReportForm) {
+            CrowdReportForm() // 👈 Your new form view
+        }
+
 
     }
 
