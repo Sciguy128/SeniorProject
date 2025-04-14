@@ -21,6 +21,21 @@ struct CrowdLocation: Identifiable {
     var crowdLevel: Int
 }
 
+// Add this function inside the MapView struct
+func crowdColor(for level: Int) -> Color {
+    // Clamp level between 0 and 10
+    let clampedLevel = min(max(level, 0), 10)
+    let ratio = Double(clampedLevel) / 10.0
+
+    // Interpolates from light blue (0) to red (10)
+    let red = ratio
+    let green = 0.5 * (1.0 - ratio)
+    let blue = 1.0 - ratio
+
+    return Color(red: red, green: green, blue: blue)
+}
+
+
 struct MapView: View {
     
     @StateObject private var locationManager = LocationManager()
@@ -60,11 +75,12 @@ struct MapView: View {
                             .font(.callout)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.85))
+                            .background(crowdColor(for: item.crowdLevel))
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                             .shadow(radius: 2)
                     }
+
                 }
             }
 
@@ -104,8 +120,12 @@ struct MapView: View {
             }
         )
         .sheet(isPresented: $showReportForm) {
-            CrowdReportForm() // 👈 Your new form view
+            CrowdReportForm(placeOfInterest: "Tinkham Veale")
+                .presentationDetents([.fraction(0.5)]) // 👈 half the screen height
+                .presentationDragIndicator(.visible)   // 👌 adds the little drag bar
         }
+
+
 
 
     }
