@@ -98,11 +98,19 @@ const Report = () => {
             <Form.Group className="mb-3" controlId="formCrowdLevel">
               <Form.Label>Crowd Level: {crowdLevel}</Form.Label>
                 <Form.Range
+                  className="crowd-slider"
                   min={0}
                   max={10}
                   step={1}
                   value={crowdLevel}
-                  onChange={(e) => setCrowdLevel(e.target.value)}
+                  onChange={(e) => setCrowdLevel(Number(e.target.value))}
+                  style={{
+                    background: `linear-gradient(to right, ${
+                      crowdLevel < 4 ? '#28a745' : crowdLevel < 7 ? '#ffc107' : '#dc3545'
+                    } 0%, ${
+                      crowdLevel * 10
+                    }%, #dee2e6 ${crowdLevel * 10}%, #dee2e6 100%)`
+                  }}
                 />
             </Form.Group>
 
