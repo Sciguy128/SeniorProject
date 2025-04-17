@@ -4,6 +4,7 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { Container, Navbar, Button, Card, Spinner, Modal, Row, Col } from 'react-bootstrap';
 import Report from './Report'; 
+import Map from './Map';
 
 const Home = () => {
 
@@ -265,6 +266,12 @@ const Home = () => {
                     </Button>
                 </Modal.Footer>
                 </Modal>
+                {user && (
+                <>
+                    <h3 className="mt-5">Campus Map</h3>
+                    <Map />
+                </>
+                )}
             </Container>
         </>
     )
