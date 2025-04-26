@@ -2,12 +2,19 @@ import time
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
+from sklearn.mixture import GaussianMixture
+import joblib
+from datetime import datetime
+import numpy as np
 
 
 database_url = "postgres://postgres:crowdsearch@localhost:5432/crowd_search"
 app = Flask(__name__)
 
 CORS(app)
+
+# Load prediction models
+tink_model = joblib.load("../prediction/tink_model.pkl")
 
 @app.route('/api/time')
 def get_current_time():
@@ -98,9 +105,22 @@ def make_report():
         return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+@app.route('/api/predict', methods=['GET'])
+def get_predictions():
+    try:
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
+        cur.execute("SELECT * from generate_crowd_pivot()")
+        crowds = cur.fetchall()
+        return jsonify(crowds)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 '''
 Curl methods to test the backend integration:
+
+curl -X GET http://localhost:5000/api/predict
 
 curl -X GET http://localhost:5000/api/crowds
 
