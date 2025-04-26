@@ -20,7 +20,6 @@ struct MapView: View {
         .init(name: "Leutner Commons", coordinate: .init(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
         .init(name: "Fribley Commons", coordinate: .init(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
     ]
-
     @State private var pointsOfInterest: [CrowdLocation] = []
 
     @State private var showForecastSheet = false
@@ -33,60 +32,77 @@ struct MapView: View {
     @State private var showProfileSheet = false
 
     var body: some View {
-        NavigationStack { // ✅ must be inside a NavigationStack
-            Map(position: $cameraPosition) {
-                ForEach(pointsOfInterest) { item in
-                    Annotation(item.name, coordinate: item.coordinate) {
-                        VStack(spacing: 6) {
-                            Text(item.name)
-                                .font(.headline)
-                                .bold()
-                                .padding(8)
-                                .background(Color.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .shadow(radius: 3)
+        NavigationStack {
+            ZStack {
+                Map(position: $cameraPosition) {
+                    ForEach(pointsOfInterest) { item in
+                        Annotation(item.name, coordinate: item.coordinate) {
+                            VStack(spacing: 6) {
+                                Text(item.name)
+                                    .font(.headline)
+                                    .bold()
+                                    .padding(8)
+                                    .background(Color.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .shadow(radius: 3)
 
-                            Text("Level \(item.crowdLevel)")
-                                .font(.callout)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(crowdColor(for: item.crowdLevel))
-                                .clipShape(Capsule())
-                                .shadow(radius: 2)
-                        }
-                        .onTapGesture {
-                            selectedForecastLocation = item.name
-                            showForecastSheet = true
+                                Text("Level \(item.crowdLevel)")
+                                    .font(.callout)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(crowdColor(for: item.crowdLevel))
+                                    .clipShape(Capsule())
+                                    .shadow(radius: 2)
+                            }
+                            .onTapGesture {
+                                selectedForecastLocation = item.name
+                                showForecastSheet = true
+                            }
                         }
                     }
-                }
 
-                if locationManager.isOnCampus {
-                    UserAnnotation()
+                    if locationManager.isOnCampus {
+                        UserAnnotation()
+                    }
+                }
+                .mapStyle(.standard(elevation: .realistic))
+                .mapControls { MapCompass(); MapUserLocationButton() }
+
+                // Floating Buttons Overlay
+                VStack {
+                    Spacer()
+                    HStack {
+                        // Bottom left - Report button
+                        Button {
+                            showReportPicker = true
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.blue)
+                                .shadow(radius: 5)
+                        }
+                        .padding(.leading, 24)
+
+                        Spacer()
+
+                        // Bottom right - Profile button
+                        Button {
+                            showProfileSheet = true
+                        } label: {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.purple)
+                                .shadow(radius: 5)
+                        }
+                        .padding(.trailing, 24)
+                    }
+                    .padding(.bottom, 30) // How high off the bottom
                 }
             }
-            .mapStyle(.standard(elevation: .realistic))
-            .mapControls { MapCompass(); MapUserLocationButton() }
-            .navigationTitle("CWRU Crowd Map") // ✅ required
+            .navigationTitle("CWRU Crowd Map")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showReportPicker = true
-                    } label: {
-                        Image(systemName: "plus.circle")
-                            .font(.title2)
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showProfileSheet = true
-                    } label: {
-                        Image(systemName: "person.crop.circle")
-                            .font(.title2)
-                    }
-                }
-            }
             .task { await fetchCrowdLevels() }
             .confirmationDialog("Report Crowd Level for…", isPresented: $showReportPicker) {
                 ForEach(pointsOfInterest) { loc in
