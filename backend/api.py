@@ -2,6 +2,10 @@ import time
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
+from sklearn.mixture import GaussianMixture
+import joblib
+from datetime import datetime
+import numpy as np
 
 
 database_url = "postgres://postgres:crowdsearch@localhost:5432/crowd_search"
@@ -9,8 +13,8 @@ app = Flask(__name__)
 
 CORS(app)
 
-conn = psycopg2.connect(database_url)
-cur = conn.cursor()
+# Load prediction models
+tink_model = joblib.load("../prediction/tink_model.pkl")
 
 @app.route('/api/time')
 def get_current_time():
@@ -18,6 +22,8 @@ def get_current_time():
 
 @app.route('/api/crowds', methods=['GET'])
 def get_crowds():
+    conn = psycopg2.connect(database_url)
+    cur = conn.cursor()
     cur.execute("SELECT name, crowd_level FROM LOCATIONS")
     crowds = cur.fetchall()
     crowds_list = [{"name": row[0], "crowd_level": row[1]} for row in crowds]
@@ -25,9 +31,29 @@ def get_crowds():
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
+    conn = psycopg2.connect(database_url)
+    cur = conn.cursor()
     cur.execute("SELECT * FROM USERS")
     users = cur.fetchall()
     return jsonify(users)
+
+@app.route('/api/xp', methods=['POST'])
+def get_xp():
+    try:
+        data = request.get_json()
+        id = data["id"]
+        
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
+        cur.execute("SELECT xp, rank FROM USERS WHERE id = %s", (id,))
+        select = cur.fetchone()
+        
+        if select:
+            return jsonify({"xp": f"{select[0]}", "rank": f"{select[1]}"})
+        else:
+            return jsonify({"error": "User does not exist"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/api/users/add', methods=['POST'])
 def add_user():
@@ -37,6 +63,8 @@ def add_user():
         name = data["name"]
         email = data["email"]
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT add_user(%s, %s, %s)", (id, name, email))
         conn.commit()
         
@@ -50,6 +78,8 @@ def delete_user():
         data = request.get_json()
         id = data["id"]
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT delete_user(%s)", (id,))
         conn.commit()
         
@@ -65,6 +95,8 @@ def make_report():
         location = data["location"]
         crowd_level = int(data["crowd_level"])
         
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
         cur.execute("SELECT create_report(%s, %s, %s)", (user_id, location, crowd_level))
         cur.execute("SELECT update_crowd(%s)", (location,))
         cur.execute("SELECT update_xp(%s)", (user_id,))
@@ -73,9 +105,22 @@ def make_report():
         return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+@app.route('/api/predict', methods=['GET'])
+def get_predictions():
+    try:
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
+        cur.execute("SELECT * from generate_crowd_pivot()")
+        crowds = cur.fetchall()
+        return jsonify(crowds)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 '''
 Curl methods to test the backend integration:
+
+curl -X GET http://localhost:5000/api/predict
 
 curl -X GET http://localhost:5000/api/crowds
 
@@ -90,4 +135,8 @@ curl -X POST http://localhost:5000/api/users/delete \
 curl -X POST http://localhost:5000/api/report \
      -H "Content-Type: application/json" \
      -d '{"user_id": "2", "location": "Leutner Commons", "crowd_level": "5"}'
+     
+curl -X POST http://localhost:5000/api/xp \
+     -H "Content-Type: application/json" \
+     -d '{"id": "2"}'
 '''
