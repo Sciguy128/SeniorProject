@@ -19,9 +19,22 @@
 		94C89B4E2D973EA9000B2CCC /* CrowdSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CrowdSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		94DA102F2DBD73D900E10F20 /* Exceptions for "CrowdSearch" folder in "CrowdSearch" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 94C89B4D2D973EA9000B2CCC /* CrowdSearch */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		94C89B502D973EA9000B2CCC /* CrowdSearch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				94DA102F2DBD73D900E10F20 /* Exceptions for "CrowdSearch" folder in "CrowdSearch" target */,
+			);
 			path = CrowdSearch;
 			sourceTree = "<group>";
 		};
@@ -287,6 +300,7 @@
 				DEVELOPMENT_TEAM = 43299H5Y75;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CrowdSearch/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The appliction needs your location when in use.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -318,6 +332,7 @@
 				DEVELOPMENT_TEAM = 43299H5Y75;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CrowdSearch/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The appliction needs your location when in use.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
