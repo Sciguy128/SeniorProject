@@ -2,11 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>API_BASE_HOST</key>
-	<string>3.133.53.100</string>
-	<key>API_BASE_PORT</key>
-	<string>5000</string>
-	<key>API_KEY</key>
-	<string>abcd1234SECRET</string>
+	<key>NSAppTransportSecurity</key>
+	<dict/>
+	<key>NSExceptionAllowsInsecureHTTPLoads</key>
+	<true/>
 </dict>
 </plist>
