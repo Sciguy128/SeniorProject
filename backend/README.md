@@ -23,6 +23,6 @@
 
 ## Tunnel to RDS Server
 1. Run chmod 400 \<Path to Key> in your terminal to set permissions
-2. Run ssh -i \<Path to Key> -L 5432:crowd-search.craysg28gzdu.us-east-2.rds.amazonaws.com:5432 ec2-user@\<Elastic IP Address>
+2. Run ssh -i \<Path to Key> -N -L 5432:crowd-search.craysg28gzdu.us-east-2.rds.amazonaws.com:5432 ec2-user@\<Elastic IP Address>
 
 Leave the tunnel running and initiate the backend in a separate terminal.
