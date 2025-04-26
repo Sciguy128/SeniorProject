@@ -55,10 +55,31 @@ struct LoginView: View {
     }
 
     private func signUp() {
-        Auth.auth().createUser(withEmail: email, password: password) { _, error in
-            if let e = error { errorMessage = e.localizedDescription }
-            else { session.listenToAuthState() }
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+            } else {
+                // 1) Listen for Firebase state
+                session.listenToAuthState()
+
+                // 2) Register in backend
+                Task {
+                    do {
+                        guard let user = Auth.auth().currentUser,
+                              let email = user.email else { return }
+                        let req = UserRequest(
+                            id: user.uid,
+                            name: user.displayName ?? "",
+                            email: email
+                        )
+                        try await UsersService.shared.addUser(req)
+                    } catch {
+                        print("⚠️ Backend addUser error:", error.localizedDescription)
+                    }
+                }
+            }
         }
     }
+
 }
 

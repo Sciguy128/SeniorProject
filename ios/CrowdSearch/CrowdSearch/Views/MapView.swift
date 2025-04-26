@@ -1,18 +1,18 @@
-// ios/CrowdSearch/Views/MapView.swift
 import SwiftUI
 import MapKit
 
 struct MapView: View {
+    @EnvironmentObject var session: SessionManager
     @StateObject private var locationManager = LocationManager()
+
     @State private var cameraPosition = MapCameraPosition.region(
         MKCoordinateRegion(
             center: Constants.campusCenterCoordinate,
-            span: .init(
-                latitudeDelta: Constants.campusLatitudeDelta,
-                longitudeDelta: Constants.campusLongitudeDelta
-            )
+            span: .init(latitudeDelta: Constants.campusLatitudeDelta,
+                        longitudeDelta: Constants.campusLongitudeDelta)
         )
     )
+
     private let defaultLocations: [CrowdLocation] = [
         .init(name: "Thwing Center",   coordinate: .init(latitude: 41.507437, longitude: -81.608400), crowdLevel: 0),
         .init(name: "Tinkham Veale",   coordinate: .init(latitude: 41.508186, longitude: -81.608665), crowdLevel: 0),
@@ -21,53 +21,103 @@ struct MapView: View {
         .init(name: "Fribley Commons", coordinate: .init(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
     ]
 
-
     @State private var pointsOfInterest: [CrowdLocation] = []
+
     @State private var showForecastSheet = false
-    @State private var selectedLocationName: String?
+    @State private var selectedForecastLocation: String?
+
+    @State private var showReportPicker = false
+    @State private var showReportSheet = false
+    @State private var selectedReportLocation: String?
+
+    @State private var showProfileSheet = false
 
     var body: some View {
-        Map(position: $cameraPosition) {
-            ForEach(pointsOfInterest) { item in
-                Annotation(item.name, coordinate: item.coordinate) {
-                    VStack(spacing: 6) {
-                        Text(item.name).font(.headline).bold()
-                            .padding(8).background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .shadow(radius: 3)
+        NavigationStack { // ✅ must be inside a NavigationStack
+            Map(position: $cameraPosition) {
+                ForEach(pointsOfInterest) { item in
+                    Annotation(item.name, coordinate: item.coordinate) {
+                        VStack(spacing: 6) {
+                            Text(item.name)
+                                .font(.headline)
+                                .bold()
+                                .padding(8)
+                                .background(Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .shadow(radius: 3)
 
-                        Text("Level \(item.crowdLevel)")
-                            .font(.callout)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(crowdColor(for: item.crowdLevel))
-                            .clipShape(Capsule())
-                            .shadow(radius: 2)
+                            Text("Level \(item.crowdLevel)")
+                                .font(.callout)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(crowdColor(for: item.crowdLevel))
+                                .clipShape(Capsule())
+                                .shadow(radius: 2)
+                        }
+                        .onTapGesture {
+                            selectedForecastLocation = item.name
+                            showForecastSheet = true
+                        }
                     }
-                    .onTapGesture {
-                        selectedLocationName = item.name
-                        showForecastSheet = true
+                }
+
+                if locationManager.isOnCampus {
+                    UserAnnotation()
+                }
+            }
+            .mapStyle(.standard(elevation: .realistic))
+            .mapControls { MapCompass(); MapUserLocationButton() }
+            .navigationTitle("CWRU Crowd Map") // ✅ required
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showReportPicker = true
+                    } label: {
+                        Image(systemName: "plus.circle")
+                            .font(.title2)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showProfileSheet = true
+                    } label: {
+                        Image(systemName: "person.crop.circle")
+                            .font(.title2)
                     }
                 }
             }
-
-            if locationManager.isOnCampus {
-                UserAnnotation()
+            .task { await fetchCrowdLevels() }
+            .confirmationDialog("Report Crowd Level for…", isPresented: $showReportPicker) {
+                ForEach(pointsOfInterest) { loc in
+                    Button(loc.name) {
+                        selectedReportLocation = loc.name
+                        showReportSheet = true
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
             }
-        }
-        .mapStyle(.standard(elevation: .realistic))
-        .mapControls { MapCompass(); MapUserLocationButton() }
-        .navigationTitle("CWRU Crowd Map")
-        .navigationBarTitleDisplayMode(.inline)
-        .task { await fetchCrowdLevels() }
-        .sheet(isPresented: $showForecastSheet) {
-            if let location = selectedLocationName {
-                ForecastChartView(location: location)
+            .sheet(isPresented: $showForecastSheet) {
+                if let loc = selectedForecastLocation {
+                    ForecastChartView(location: loc)
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
+                }
+            }
+            .sheet(isPresented: $showReportSheet) {
+                if let loc = selectedReportLocation {
+                    CrowdReportForm(placeOfInterest: loc)
+                        .presentationDetents([.fraction(0.5)])
+                        .presentationDragIndicator(.visible)
+                }
+            }
+            .sheet(isPresented: $showProfileSheet) {
+                ProfileView()
+                    .environmentObject(session)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
         }
-
     }
 
     private func fetchCrowdLevels() async {
@@ -75,12 +125,10 @@ struct MapView: View {
         do {
             let crowds = try await CrowdService.shared.fetchCrowds()
             merged = merged.map { loc in
-                if let match = crowds.first(where: { $0.name == loc.name }) {
-                    return CrowdLocation(
-                        name: loc.name,
-                        coordinate: loc.coordinate,
-                        crowdLevel: match.crowd_level
-                    )
+                if let m = crowds.first(where: { $0.name == loc.name }) {
+                    return CrowdLocation(name: loc.name,
+                                         coordinate: loc.coordinate,
+                                         crowdLevel: m.crowd_level)
                 }
                 return loc
             }

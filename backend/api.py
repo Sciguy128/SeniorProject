@@ -89,22 +89,27 @@ def delete_user():
     
 @app.route('/api/report', methods=['POST'])
 def make_report():
+    data = request.get_json()
+    print("make_report payload:", data)
     try:
-        data = request.get_json()
-        user_id = data["user_id"]
-        location = data["location"]
-        crowd_level = int(data["crowd_level"])
-        
+        user_id    = data["user_id"]
+        location   = data["location"]
+        crowd_level= int(data["crowd_level"])
+        print(f"calling create_report({user_id}, {location}, {crowd_level})")
+
         conn = psycopg2.connect(database_url)
-        cur = conn.cursor()
+        cur  = conn.cursor()
         cur.execute("SELECT create_report(%s, %s, %s)", (user_id, location, crowd_level))
         cur.execute("SELECT update_crowd(%s)", (location,))
         cur.execute("SELECT update_xp(%s)", (user_id,))
         conn.commit()
-        
-        return jsonify({"message": f"Location {location} crowd level updated succesfully"}), 200
+
+        return jsonify({"message": f"Location {location} updated"}), 200
+
     except Exception as e:
+        print("make_report error:", type(e).__name__, e)
         return jsonify({"error": str(e)}), 400
+
     
 @app.route('/api/predict', methods=['GET'])
 def get_predictions():
