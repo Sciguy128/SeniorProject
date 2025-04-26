@@ -1,13 +1,9 @@
-//
-//  ContentView.swift
-//  CrowdSearch
-//
-//  Created by Ryan Lin on 3/28/25.
-//
-import SwiftUI
+// ios/CrowdSearch/Views/ContentView.swift
+// Entry point that switches between login and main map.
 
 import SwiftUI
 
+/// Chooses between the login screen or the map based on authentication state.
 struct ContentView: View {
     @EnvironmentObject var session: SessionManager
 
@@ -15,10 +11,10 @@ struct ContentView: View {
         Group {
             if session.isLoggedIn {
                 MapView()
-//                CrowdListView()
             } else {
                 LoginView()
             }
         }
     }
 }
+

@@ -8,12 +8,6 @@
 import Foundation
 
 
-struct Crowd: Codable, Identifiable {
-    var id: UUID { UUID() } // Temporary UUID since API doesn’t give one
-    let name: String
-    let crowd_level: Int
-}
-
 class CrowdService {
     static let shared = CrowdService()
     private let baseURL = "http://localhost:5000" // Backend URL

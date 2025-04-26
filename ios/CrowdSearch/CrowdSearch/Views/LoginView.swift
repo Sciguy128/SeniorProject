@@ -1,14 +1,10 @@
-//
-//  LoginView.swift
-//  CrowdSearch
-//
-//  Created by Ryan Lin on 3/28/25.
-//
+// ios/CrowdSearch/Views/LoginView.swift
+// Handles user authentication via Firebase.
 
-import Foundation
 import SwiftUI
 import FirebaseAuth
 
+/// Lets the user sign in or sign up with email/password and reports errors.
 struct LoginView: View {
     @EnvironmentObject var session: SessionManager
     @State private var email = ""
@@ -31,11 +27,7 @@ struct LoginView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
             Button(isSignUpMode ? "Create Account" : "Login") {
-                if isSignUpMode {
-                    signUp()
-                } else {
-                    signIn()
-                }
+                if isSignUpMode { signUp() } else { signIn() }
             }
             .padding()
             .buttonStyle(.borderedProminent)
@@ -56,22 +48,17 @@ struct LoginView: View {
     }
 
     private func signIn() {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-            } else {
-                session.listenToAuthState() // Assuming SessionManager listens for auth changes
-            }
+        Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            if let e = error { errorMessage = e.localizedDescription }
+            else { session.listenToAuthState() }
         }
     }
 
     private func signUp() {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-            } else {
-                session.listenToAuthState()
-            }
+        Auth.auth().createUser(withEmail: email, password: password) { _, error in
+            if let e = error { errorMessage = e.localizedDescription }
+            else { session.listenToAuthState() }
         }
     }
 }
+

@@ -1,37 +1,24 @@
-//
-//  CrowdListView.swift
-//  CrowdSearch
-//
-//  Created by Ryan Lin on 4/4/25.
-//
+// ios/CrowdSearch/Views/CrowdListView.swift
+// Displays a list of crowd levels for all locations.
 
 import SwiftUI
 
-import SwiftUI
-
+/// Fetches and shows all `Crowd` items in a `List`, with loading state.
 struct CrowdListView: View {
     @State private var crowds: [Crowd] = []
     @State private var isLoading = true
 
     var body: some View {
         NavigationView {
-            List(crowds) { crowd in
+            List(crowds) { c in
                 HStack {
-                    Text(crowd.name)
-                        .font(.headline)
+                    Text(c.name).font(.headline)
                     Spacer()
-                    Text("Level \(crowd.crowd_level)")
-                        .foregroundColor(.gray)
+                    Text("Level \(c.crowd_level)").foregroundColor(.gray)
                 }
             }
             .navigationTitle("Crowd Levels")
-            .overlay(
-                Group {
-                    if isLoading {
-                        ProgressView("Loading...")
-                    }
-                }
-            )
+            .overlay { if isLoading { ProgressView("Loading...") } }
         }
         .task {
             do {
@@ -42,9 +29,4 @@ struct CrowdListView: View {
             isLoading = false
         }
     }
-}
-
-
-#Preview{
-    CrowdListView()
 }
