@@ -108,22 +108,14 @@ def make_report():
     
 @app.route('/api/predict', methods=['GET'])
 def get_predictions():
-    day = datetime.today().strftime("%A")
-    if day == "Monday" or day == "Wednesday":
-        mean = 0
-    elif day == "Tuesday" or day == "Thursday":
-        mean = 3
-    elif day == "Friday":
-        mean = 2
-    else:
-        mean = 1
-        
-    time_h = int(datetime.now().strftime("%H"))
-    time_m = int(datetime.now().strftime("%M"))
-    
-    tink_prediction = np.ceil(tink_model.means_[mean][4 * (time_h + 1) + (time_m // 15)])
-    
-    return jsonify({"Tinkham Veale University Center": tink_prediction})
+    try:
+        conn = psycopg2.connect(database_url)
+        cur = conn.cursor()
+        cur.execute("SELECT * from generate_crowd_pivot()")
+        crowds = cur.fetchall()
+        return jsonify(crowds)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 '''
 Curl methods to test the backend integration:
