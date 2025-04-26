@@ -1,34 +1,32 @@
 // ios/CrowdSearch/Views/MapView.swift
 // Displays an interactive map annotated with live crowd levels.
+// Tapping “+” brings up a location picker before showing the report form.
 
 import SwiftUI
 import MapKit
 
-/// Shows campus POIs on a map, fetches their current crowd levels from the backend,
-/// and lets the user tap an annotation to report a new level.
 struct MapView: View {
     @StateObject private var locationManager = LocationManager()
     @State private var cameraPosition = MapCameraPosition.region(
         MKCoordinateRegion(
-            center: .init(latitude: Constants.campusCenterLatitude,
-                          longitude: Constants.campusCenterLongitude),
+            center: Constants.campusCenterCoordinate,
             span: .init(latitudeDelta: Constants.campusLatitudeDelta,
                         longitudeDelta: Constants.campusLongitudeDelta)
         )
     )
 
-    /// Static coordinates for known locations
     private let defaultLocations: [CrowdLocation] = [
-        .init(name: "Thwing Center",     coordinate: .init(latitude: 41.507437, longitude: -81.608400), crowdLevel: 0),
-        .init(name: "Tinkham Veale",     coordinate: .init(latitude: 41.508186, longitude: -81.608665), crowdLevel: 0),
-        .init(name: "Veale Center",      coordinate: .init(latitude: 41.504664, longitude: -81.607070), crowdLevel: 0),
-        .init(name: "Leutner Commons",   coordinate: .init(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
-        .init(name: "Fribley Commons",   coordinate: .init(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
+        .init(name: "Thwing Center",   coordinate: .init(latitude: 41.507437, longitude: -81.608400), crowdLevel: 0),
+        .init(name: "Tinkham Veale",   coordinate: .init(latitude: 41.508186, longitude: -81.608665), crowdLevel: 0),
+        .init(name: "Veale Center",    coordinate: .init(latitude: 41.504664, longitude: -81.607070), crowdLevel: 0),
+        .init(name: "Leutner Commons", coordinate: .init(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
+        .init(name: "Fribley Commons", coordinate: .init(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
     ]
 
     @State private var pointsOfInterest: [CrowdLocation] = []
     @State private var showReportForm = false
     @State private var selectedLocationName: String?
+    @State private var showLocationPicker = false
 
     var body: some View {
         Map(position: $cameraPosition) {
@@ -63,21 +61,13 @@ struct MapView: View {
             }
         }
         .mapStyle(.standard(elevation: .realistic))
-        .mapControls {
-            MapCompass()
-            MapUserLocationButton()
-        }
+        .mapControls { MapCompass(); MapUserLocationButton() }
         .navigationTitle("CWRU Crowd Map")
         .navigationBarTitleDisplayMode(.inline)
-        .task {
-            await fetchCrowdLevels()
-        }
+        .task { await fetchCrowdLevels() }
         .overlay(alignment: .bottomLeading) {
             Button {
-                if let first = pointsOfInterest.first?.name {
-                    selectedLocationName = first
-                    showReportForm = true
-                }
+                showLocationPicker = true
             } label: {
                 Image(systemName: "plus.circle.fill")
                     .resizable()
@@ -86,6 +76,17 @@ struct MapView: View {
             }
             .padding([.leading, .bottom], 20)
         }
+        // ConfirmationDialog to pick which location to report
+        .confirmationDialog("Select a location", isPresented: $showLocationPicker, titleVisibility: .visible) {
+            ForEach(pointsOfInterest) { loc in
+                Button(loc.name) {
+                    selectedLocationName = loc.name
+                    showReportForm = true
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        }
+        // The actual report sheet
         .sheet(isPresented: $showReportForm) {
             if let place = selectedLocationName {
                 CrowdReportForm(placeOfInterest: place)
@@ -95,31 +96,20 @@ struct MapView: View {
         }
     }
 
-    /// Fetches current crowd levels, merges them into the static coordinate list.
+    /// Fetches current crowd levels and merges them into the static coordinate list.
     private func fetchCrowdLevels() async {
-        // Start from defaults (level 0 placeholder)
         var merged = defaultLocations
-
         do {
             let crowds = try await CrowdService.shared.fetchCrowds()
-            // Update merge
             merged = merged.map { loc in
                 if let match = crowds.first(where: { $0.name == loc.name }) {
-                    return CrowdLocation(
-                        name: loc.name,
-                        coordinate: loc.coordinate,
-                        crowdLevel: match.crowd_level
-                    )
+                    return CrowdLocation(name: loc.name, coordinate: loc.coordinate, crowdLevel: match.crowd_level)
                 }
                 return loc
             }
         } catch {
             print("Failed to fetch crowd data:", error)
         }
-
-        // Apply on main thread
-        await MainActor.run {
-            pointsOfInterest = merged
-        }
+        await MainActor.run { pointsOfInterest = merged }
     }
 }
