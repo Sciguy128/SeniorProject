@@ -29,7 +29,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     private func isWithinCampusBounds(_ coordinate: CLLocationCoordinate2D) -> Bool {
-        // Define your bounding box around CWRU campus
         let latMin = 41.498
         let latMax = 41.515
         let lonMin = -81.614

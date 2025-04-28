@@ -13,6 +13,7 @@ struct ReportRequest: Codable {
 class ReportService {
     static let shared = ReportService()
     private init() {}
+    var crowd = CrowdService()
 
     /// Sends a new crowd report to /api/report.
     func submitReport(_ report: ReportRequest) async throws {
@@ -28,13 +29,12 @@ class ReportService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        // API key header
         if !Constants.apiKey.isEmpty {
             request.addValue(Constants.apiKey, forHTTPHeaderField: "x-api-key")
         }
         request.httpBody = bodyData
 
-        // 4) (Optional) Debug log
+        // 4) Debug logs
         #if DEBUG
         if let raw = String(data: bodyData, encoding: .utf8) {
             print("📝 Reporting payload:\n\(raw)")
@@ -58,8 +58,11 @@ class ReportService {
             }
         }
 
-        // 7) Optionally parse response JSON for confirmation
-        //    e.g. {"message":"Location X updated successfully"}
+        // 🔥 Await fetching updated crowds
+        _ = try await crowd.fetchCrowds()
+
+        // 7) Optionally decode confirmation message
         // let _ = try JSONDecoder().decode([String: String].self, from: data)
     }
+
 }

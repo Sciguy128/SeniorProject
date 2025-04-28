@@ -4,7 +4,6 @@ import MapKit
 struct MapView: View {
     @EnvironmentObject var session: SessionManager
     @StateObject private var locationManager = LocationManager()
-
     @State private var cameraPosition = MapCameraPosition.region(
         MKCoordinateRegion(
             center: Constants.campusCenterCoordinate,
@@ -100,6 +99,54 @@ struct MapView: View {
                     }
                     .padding(.bottom, 30) // How high off the bottom
                 }
+                VStack {
+                    Spacer()
+                    HStack {
+                        // Bottom left - Report button
+                        Button {
+                            showReportPicker = true
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.blue)
+                                .shadow(radius: 5)
+                        }
+                        .padding(.leading, 24)
+
+                        Spacer()
+
+                        // Center - Refresh button
+                        Button {
+                            Task {
+                                await fetchCrowdLevels()
+                            }
+                        } label: {
+                            Image(systemName: "arrow.clockwise.circle.fill")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.green)
+                                .shadow(radius: 5)
+                        }
+                        .padding(.horizontal, 24)
+
+                        Spacer()
+
+                        // Bottom right - Profile button
+                        Button {
+                            showProfileSheet = true
+                        } label: {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.purple)
+                                .shadow(radius: 5)
+                        }
+                        .padding(.trailing, 24)
+                    }
+                    .padding(.bottom, 30) // How high off the bottom
+                }
+
             }
             .navigationTitle("CWRU Crowd Map")
             .navigationBarTitleDisplayMode(.inline)
@@ -154,3 +201,4 @@ struct MapView: View {
         await MainActor.run { pointsOfInterest = merged }
     }
 }
+

@@ -10,10 +10,10 @@
 
 import Foundation
 
-
+@Observable
 class CrowdService {
     static let shared = CrowdService()
-    private let baseURL = "http://localhost:5000" // Use your actual server URL
+    private let baseURL = "http://localhost:5000" 
 
     func fetchCrowds() async throws -> [Crowd] {
         guard let url = URL(string: "\(baseURL)/api/crowds") else {
@@ -23,6 +23,7 @@ class CrowdService {
         let (data, _) = try await URLSession.shared.data(from: url)
 
         let decoded = try JSONDecoder().decode([Crowd].self, from: data)
+        print(decoded)
         return decoded
     }
 }
