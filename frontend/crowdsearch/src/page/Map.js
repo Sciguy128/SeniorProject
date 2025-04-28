@@ -1,5 +1,5 @@
 // src/components/CampusMap.js
-import React from 'react';
+import React, {useState} from 'react';
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -47,7 +47,7 @@ const cleanMapStyle = [
   
 
 // Center on your campus — replace with actual coordinates
-const center = {
+const defaultCenter = {
   lat: 41.5015, // example: Case Western Reserve University
   lng: -81.6051
 };
@@ -61,34 +61,71 @@ const pointsOfInterest = [
   { id: 5, name: 'Veale Center', lat: 41.50124, lng: -81.60565 },
 ];
 
-const CampusMap = () => {
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyBOY2jAUqEgeiiTHSkGWhg_DW0bk7Bn_8U', // replace with your actual key
-  });
+  const CampusMap = ({ locations = [], userPosition = null }) => {
+    const { isLoaded, loadError } = useLoadScript({
+      googleMapsApiKey: 'AIzaSyBOY2jAUqEgeiiTHSkGWhg_DW0bk7Bn_8U',
+    });
+    const [selected, setSelected] = useState(null);
+  
+    if (loadError) return <div>Error loading map</div>;
+    if (!isLoaded) return <div>Loading map...</div>;
+  
+    // Center on user if we have it, otherwise on campus
+    const center = userPosition || defaultCenter;
 
-  if (!isLoaded) return <div>Loading...</div>;
-
-  return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={17}
-      options={{
-        styles: cleanMapStyle,
-        disableDefaultUI: true,     // hides zoom buttons, etc.
-        gestureHandling: 'greedy',  // scroll + drag friendly
-        clickableIcons: false       // disables POI tooltips
-      }}
-    >
-      {pointsOfInterest.map(point => (
-        <Marker
-          key={point.id}
-          position={{ lat: point.lat, lng: point.lng }}
-          label={point.name}
-        />
-      ))}
-    </GoogleMap>
-  );
-};
-
-export default CampusMap;
+    return (
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={17}
+        options={{
+          styles: cleanMapStyle,
+          disableDefaultUI: true,
+          gestureHandling: 'greedy',
+          clickableIcons: false,
+        }}
+      >
+        {/*
+          Optional: show user’s pin with a custom icon
+        */}
+        {userPosition && (
+          <Marker
+            position={userPosition}
+          />
+        )}
+  
+        {/*
+          Render each location from Home.js.
+          Make sure your API returns latitude/longitude fields!
+        */}
+        {locations.map(loc => (
+          <Marker
+            key={loc.id}
+            position={{ lat: loc.latitude, lng: loc.longitude }}
+            label={`${loc.crowd_level}`}
+            onClick={() => setSelected(loc)}
+          />
+        ))}
+  
+        {/*
+          When you click a marker, show an InfoWindow
+        */}
+        {selected && (
+          <InfoWindow
+            position={{
+              lat: selected.latitude,
+              lng: selected.longitude,
+            }}
+            onCloseClick={() => setSelected(null)}
+          >
+            <div>
+              <h6 className="mb-1">{selected.name}</h6>
+              <p className="mb-0">Crowd Level: {selected.crowd_level}</p>
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+    );
+  };
+  
+  export default CampusMap;

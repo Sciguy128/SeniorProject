@@ -30,6 +30,7 @@ const Report = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log(location + " " + crowdLevel);
     // Simple validation: location and crowd level are required
     if (!location || !crowdLevel) {
       setError('Please fill in all required fields.');
@@ -71,6 +72,14 @@ const Report = () => {
     } else {
       console.log("User not signed in, but report visible")
     }
+
+    // Allow reporting again after 3 seconds
+    setTimeout(() => {
+      setSubmitted(false);
+      setLocation('');
+      setCrowdLevel('');
+      setNotes('');
+    }, 3000);
   };
 
   return (
@@ -84,7 +93,9 @@ const Report = () => {
             <Form.Group className="mb-3" controlId="formLocation">
               <Form.Label>Location</Form.Label>
               {locations === null ? <Spinner animation="border" /> :
-                <Form.Select>
+                <Form.Select
+                onChange={(e) => setLocation((e.target.value))}
+                >
                 {locations.map((location, index) => {
                     return (
                     <option key={index} > {location.name} </option>

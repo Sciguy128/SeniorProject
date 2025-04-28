@@ -18,23 +18,49 @@ const Home = () => {
     const [xp, setXp] = useState(0)
     const [rank, setRank] = useState(0)
 
+    const poiCoordinates = {
+        "Thwing Center":                         { lat: 41.50742, lng: -81.60842 },
+        "Tinkham Veale University Center":       { lat: 41.50795, lng: -81.60873 },
+        "Leutner Commons":                       { lat: 41.51353, lng: -81.60597 },
+        "Fribley Commons":                       { lat: 41.50114, lng: -81.60284 },
+        "Veale Center":                          { lat: 41.50124, lng: -81.60565 },
+      };
 
-    useEffect(() => {
+
+      useEffect(() => {
         const fetchCrowds = () => {
-            fetch('api/crowds')
-                .then(res => res.json())
-                .then(data => {
-                    setLocations(data)
-                    console.log("Crowd Levels:", data)
-                })
-        }
-
-        fetchCrowds(); 
-
+          fetch('/api/crowds')
+            .then(res => res.json())
+            .then(data => {
+              // Enrich each campus location with lat/lng if we know it
+              const enriched = data.map(loc => {
+                const coords = poiCoordinates[loc.name];
+                if (coords) {
+                  // attach the latitude & longitude fields
+                  return {
+                    ...loc,
+                    latitude: coords.lat,
+                    longitude: coords.lng
+                  };
+                } else {
+                  // optionally filter out unknowns:
+                  // return null
+                  // or just leave them unmodified and let Map skip them
+                  return loc;
+                }
+              })
+              // if you returned null for unknowns you can do:
+              // .filter(loc => loc !== null)
+              setLocations(enriched);
+            })
+            .catch(err => console.error('fetchCrowds error', err));
+        };
+      
+        fetchCrowds();
         const crowdInterval = setInterval(fetchCrowds, 10000);
-
         return () => clearInterval(crowdInterval);
-    }, []);
+      }, []);
+      
 
     useEffect(() => {
         const fetchXp = () => {
@@ -269,7 +295,10 @@ const Home = () => {
                 {user && (
                 <>
                     <h3 className="mt-5">Campus Map</h3>
-                    <Map />
+                    <Map
+                        locations={locations}
+                        userPosition={latitude && longitude ? { lat: +latitude, lng: +longitude } : null}
+                    />
                 </>
                 )}
             </Container>
