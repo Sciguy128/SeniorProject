@@ -4,8 +4,29 @@ import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { Container, Navbar, Button, Card, Spinner, Modal, Row, Col } from 'react-bootstrap';
 import Report from './Report'; 
+import Map from './Map';
 
 const Home = () => {
+
+    // compute distance in kilometers between two lat/lng pairs
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+    }
+  
+    function getDistanceKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth radius in km
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) *
+            Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+  
 
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
@@ -16,24 +37,77 @@ const Home = () => {
     const [longitude, setLongitude] = useState(null);
     const [xp, setXp] = useState(0)
     const [rank, setRank] = useState(0)
+    const [nearest, setNearest] = useState(null);
+
+    const poiCoordinates = {
+        "Thwing Center":                         { lat: 41.50742, lng: -81.60842 },
+        "Tinkham Veale University Center":       { lat: 41.50795, lng: -81.60873 },
+        "Leutner Commons":                       { lat: 41.51353, lng: -81.60597 },
+        "Fribley Commons":                       { lat: 41.50114, lng: -81.60284 },
+        "Veale Center":                          { lat: 41.50124, lng: -81.60565 },
+      };
 
 
-    useEffect(() => {
-        const fetchCrowds = () => {
-            fetch('api/crowds')
-                .then(res => res.json())
-                .then(data => {
-                    setLocations(data)
-                    console.log("Crowd Levels:", data)
-                })
+      useEffect(() => {
+        if (latitude && longitude && locations.length) {
+          let best = null;
+          let bestDist = Infinity;
+      
+          locations.forEach(loc => {
+            if (loc.latitude != null && loc.longitude != null) {
+              const d = getDistanceKm(
+                parseFloat(latitude),
+                parseFloat(longitude),
+                loc.latitude,
+                loc.longitude
+              );
+              if (d < bestDist) {
+                bestDist = d;
+                best = loc;
+              }
+            }
+          });
+      
+          if (best) {
+            setNearest({ ...best, distanceKm: bestDist });
+          }
         }
+      }, [latitude, longitude, locations]);
 
-        fetchCrowds(); 
-
+      useEffect(() => {
+        const fetchCrowds = () => {
+          fetch('/api/crowds')
+            .then(res => res.json())
+            .then(data => {
+              // Enrich each campus location with lat/lng if we know it
+              const enriched = data.map(loc => {
+                const coords = poiCoordinates[loc.name];
+                if (coords) {
+                  // attach the latitude & longitude fields
+                  return {
+                    ...loc,
+                    latitude: coords.lat,
+                    longitude: coords.lng
+                  };
+                } else {
+                  // optionally filter out unknowns:
+                  // return null
+                  // or just leave them unmodified and let Map skip them
+                  return loc;
+                }
+              })
+              // if you returned null for unknowns you can do:
+              // .filter(loc => loc !== null)
+              setLocations(enriched);
+            })
+            .catch(err => console.error('fetchCrowds error', err));
+        };
+      
+        fetchCrowds();
         const crowdInterval = setInterval(fetchCrowds, 10000);
-
         return () => clearInterval(crowdInterval);
-    }, []);
+      }, []);
+      
 
     useEffect(() => {
         const fetchXp = () => {
@@ -187,12 +261,24 @@ const Home = () => {
             <Container className="text-center">
                 <h1 className="mb-4">Welcome Home</h1>
 
-                {latitude && longitude && (
+                {/*latitude && longitude && (
                     <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
                         <Card.Body>
                         <Card.Title>Your Current Location</Card.Title>
                         <Card.Text>Latitude: {latitude}</Card.Text>
                         <Card.Text>Longitude: {longitude}</Card.Text>
+                        </Card.Body>
+                    </Card>
+                    )*/}
+                {nearest && (
+                    <Card className="shadow-sm p-3 mb-4 bg-light rounded" style={{ maxWidth: "400px", margin: "auto" }}>
+                        <Card.Body>
+                        <Card.Title>Nearest Campus Spot</Card.Title>
+                        <Card.Text>
+                            <strong>{nearest.name}</strong><br/>
+                            {nearest.distanceKm.toFixed(2)} km away<br/>
+                            Crowd Level: {nearest.crowd_level}
+                        </Card.Text>
                         </Card.Body>
                     </Card>
                     )}
@@ -265,6 +351,15 @@ const Home = () => {
                     </Button>
                 </Modal.Footer>
                 </Modal>
+                {user && (
+                <>
+                    <h3 className="mt-5">Campus Map</h3>
+                    <Map
+                        locations={locations}
+                        userPosition={latitude && longitude ? { lat: +latitude, lng: +longitude } : null}
+                    />
+                </>
+                )}
             </Container>
         </>
     )
