@@ -14,7 +14,7 @@ struct MapView: View {
 
     private let defaultLocations: [CrowdLocation] = [
         .init(name: "Thwing Center",   coordinate: .init(latitude: 41.507437, longitude: -81.608400), crowdLevel: 0),
-        .init(name: "Tinkham Veale",   coordinate: .init(latitude: 41.508186, longitude: -81.608665), crowdLevel: 0),
+        .init(name: "Tinkham Veale University Center",   coordinate: .init(latitude: 41.508186, longitude: -81.608665), crowdLevel: 0),
         .init(name: "Veale Center",    coordinate: .init(latitude: 41.504664, longitude: -81.607070), crowdLevel: 0),
         .init(name: "Leutner Commons", coordinate: .init(latitude: 41.513639, longitude: -81.606061), crowdLevel: 0),
         .init(name: "Fribley Commons", coordinate: .init(latitude: 41.501038, longitude: -81.602749), crowdLevel: 0)
